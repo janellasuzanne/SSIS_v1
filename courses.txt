@@ -1,0 +1,10 @@
+BSCS,Bachelor of Science in Computer Science
+BSIT,Bachelor of Science in Information Technology
+BSIS,Bachelor of Science in Information Systems
+BSCA,Bachelor of Science in Computer Applications
+BSChem,Bachelor of Science in Chemistry
+BSM,Bachelor of Science in Mathematics
+BSBio,Bachelor of Science in Biology
+BSA,Bachelor of Science in Accountancy
+BAPolSci,Bachelor in Arts in Political Science
+BAPsych,Bachelor in Arts in Psychology
