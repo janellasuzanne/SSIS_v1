@@ -7,22 +7,14 @@ class SSIS_ver1(tk.Tk):
         super().__init__()
         self.title('Simple Student Information System v2')
 
-        # Get the screen width and height
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-
-        # Set the window dimensions
         window_width = self.winfo_screenwidth()
         window_height = self.winfo_screenheight()
-
-        # Calculate the position to center the window
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
-
-        # Set the window position
         self.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-        # self.geometry('720x480')
         self.bind('<Control-KeyPress-w>', lambda event: self.quit())
 
         # entities
@@ -93,6 +85,7 @@ class SSIS_ver1(tk.Tk):
         self.entities_frame.pack(fill='x', padx=5, pady=10)
         self.search_frame.pack(fill='x', padx=5, pady=5)
 
+        # other widgets
         self.student_button.pack(side='left', expand=True, pady=5)
         self.course_button.pack(side='left', expand=True, pady=5)
         self.search_combobox.pack(side='left', expand=True)
@@ -101,11 +94,13 @@ class SSIS_ver1(tk.Tk):
         self.treeview.pack(fill='x', expand=True, padx=30, pady=10)
         self.add.pack(fill='x', padx=10, pady=10)
 
+        # default
         self.entity = self.student
         self.refresh_list(self.student)
 
         self.mainloop()
 
+    # sets the information shown as "All" when changing tabs
     def tab_selection(self, entity):
         if entity == self.student:
             self.entity = self.student
@@ -113,7 +108,8 @@ class SSIS_ver1(tk.Tk):
             self.entity = self.course
         self.search_var.set('All')
         self.refresh_list(self.entity)
-
+# L - List
+    # shows information
     def refresh_list(self, entity):
         self.entity = entity
         # Removes the previous data in the treeview
@@ -148,9 +144,8 @@ class SSIS_ver1(tk.Tk):
             for course in courses:
                 self.treeview.insert('', tk.END, values=(course['code'], course['description']))
 
-        # Updates the available search filters
+        # Updates the available search filters for either student or course
         self.search_combo_update()
-        
         self.search_items()
 
     def read_students_from_file(self):
@@ -178,12 +173,14 @@ class SSIS_ver1(tk.Tk):
                 courses.append(course)
         return courses
 
+    # updates the search filters for either student or course
     def search_combo_update(self):
         if self.entity == self.student:
             self.search_combobox['values'] = ('All', 'ID', 'Last Name', 'Course')
         elif self.entity == self.course:
             self.search_combobox['values'] = ('All', 'Course Code')
 
+    # for search filters
     def search_items(self):
         search_criteria = self.search_var.get()
         search_text = self.search_entry_var.get()
@@ -220,7 +217,7 @@ class SSIS_ver1(tk.Tk):
             for course in filtered_courses:
                 self.treeview.insert('', tk.END, values=(course['code'], course['description']))
         
-
+# C - Create
     def create(self, entity):
         # toplevel
         self.create_toplevel = tk.Toplevel(self)
@@ -370,9 +367,11 @@ class SSIS_ver1(tk.Tk):
             self.write_student_to_file(student)
 
         messagebox.showinfo('Registration Successful!', f'{self.entity} successfully registered!')
+        # to update the list shown in treeview after creation
         self.refresh_list(self.entity)
         self.create_toplevel.destroy()
 
+    # prevents duplicates by checking the existing data for both course and student
     def is_duplicate_course_code(self, code, exclude=None):
         courses = self.read_courses_from_file()
         for course in courses:
@@ -398,6 +397,7 @@ class SSIS_ver1(tk.Tk):
                 f"{student['year_level']},{student['gender']}\n"
             )
 
+# R - Read
     def get_info(self, event):
         item = self.treeview.focus()
         info = self.treeview.item(item, 'values')
@@ -446,6 +446,7 @@ class SSIS_ver1(tk.Tk):
             self.code_entry.pack(pady=2)
             self.desc_entry.pack(pady=2)
 
+            # pass the widgets that can be edited
             self.editables = (self.code_entry, self.desc_entry)
             self.key = info[0]
 
@@ -461,7 +462,6 @@ class SSIS_ver1(tk.Tk):
                         self.year_var.set(student_list[4])
                         self.gender_var.set(student_list[5])
                         print(student_list)
-
                         break
 
             # WIDGETS
@@ -496,7 +496,7 @@ class SSIS_ver1(tk.Tk):
                 width=45,
                 state='disable')
 
-            # fetch available courses
+            # fetch available courses for the course_combobox if wants to edit course
             courses = []
             with open('courses.txt', 'r') as file:
                 for line in file:
@@ -534,6 +534,7 @@ class SSIS_ver1(tk.Tk):
             self.year_level_combobox.pack(pady=2)
             self.gender_combobox.pack(pady=2)
         
+            # pass the widgets that can be edited
             self.editables = (self.course_combobox, self.year_level_combobox, self.gender_combobox)
             self.key = info[0]
 
@@ -556,6 +557,7 @@ class SSIS_ver1(tk.Tk):
         self.update.pack(side='left', expand=True)
         self.delete.pack(side='left', expand=True)
 
+    # enables fields to be edited
     def edit_entries(self, editables):
         if self.entity == self.course:
             for editable in editables:
@@ -564,6 +566,7 @@ class SSIS_ver1(tk.Tk):
             for editable in editables:
                 editable['state'] = 'readonly'
 
+# U - Update
     def update_item(self, key):
         if self.entity == self.course:
             updated_course = {
@@ -577,7 +580,6 @@ class SSIS_ver1(tk.Tk):
                 return
 
             students = []
-
             with open('students.txt', 'r') as file:
                 for line in file:
                     student_info = line.strip().split(',')
@@ -629,6 +631,7 @@ class SSIS_ver1(tk.Tk):
         self.refresh_list(self.entity)
         self.info_toplevel.destroy()
 
+# D - Delete
     def delete_item(self, toplevel):
         confirm = False
 
@@ -639,7 +642,7 @@ class SSIS_ver1(tk.Tk):
                     student_info = line.strip().split(',')
                     if student_info[3] == self.code_var.get():
                         studentsInCourse.append(student_info)
-
+            # warning for when there are students currently enrolled in the to-be-deleted course
             if len(studentsInCourse) > 0:
                 answer = messagebox.askokcancel(
                     "Warning",
